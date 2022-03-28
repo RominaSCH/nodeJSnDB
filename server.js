@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true })); //이해하려 하지 말고 외워라
 const MongoClient = require("mongodb").MongoClient;
 var db;
-const mongoURL = "mongodb+srv://rominaSCH:dhktej31@nodsjsndb.uuwp9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const mongoURL = "mongodb://rominaSCH:dhktej31@nodsjsndb-shard-00-00.uuwp9.mongodb.net:27017,nodsjsndb-shard-00-01.uuwp9.mongodb.net:27017,nodsjsndb-shard-00-02.uuwp9.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-znyoth-shard-0&authSource=admin&retryWrites=true&w=majority";
 //작동이 안되면 98%확률로 오타!
 app.set("view enine", 'ejs');
 
@@ -38,25 +38,21 @@ app.get("/write", function (req, res) {
   res.sendFile(__dirname + "/write.html");
 }); // JS는 콜백함수를 자주 쓰는데, 순차적으로 실행하고 싶을 때 사용한다.
 
-// app.get("/list", function(req, res){
-//     db.collection("post").find().toArray((err, result) => {
-//         console.log(result);
-//         // res.render("list.ejs", )
-//     });//DB에 저장된 post라는 collection 안의 모든 데이터를 꺼내주세요
-//     res.render('list.ejs');
-    
-// })
+app.get("/list", function(req, res){
+    db.collection("post").find().toArray(function(err, result){
+        console.log(result);
+        res.render('list.ejs', {posts : result});
+    });//DB에 저장된 post라는 collection 안의 모든 데이터를 꺼내주세요
+})
 
 
 app.post("/add", function (req, res) {
   //받은 정보는 req에 있다. 쉽게 꺼내쓰려면 body-parser이 필요하다. npm install body-parser
-  
   MongoClient.connect(mongoURL,{ useUnifiedTopology: true }, function (error, client) {
       if (error) return console.log(error); //한줄일 경우 {} 생략가능
-
       db = client.db("todo"); //todo라는 database(폴더)에 연결해주세요
       db.collection('post').insertOne({_id : new Date(), todo : req.body.toDo, dueDate : req.body.date}, function(err, result){
-          console.log('저장완료');
+          console.log('saved');
       });
 
       
