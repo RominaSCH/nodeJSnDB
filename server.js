@@ -1,29 +1,74 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended : true})); //이해하려 하지 말고 외워라
+app.use(bodyParser.urlencoded({ extended: true })); //이해하려 하지 말고 외워라
+const MongoClient = require("mongodb").MongoClient;
+var db;
+const mongoURL = "mongodb+srv://rominaSCH:dhktej31@nodsjsndb.uuwp9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 //작동이 안되면 98%확률로 오타!
+app.set("view enine", 'ejs');
 
-app.listen(6789, function(){ //listen(서버띄울 포트번호, 띄운 후 실행할 코드)
-    console.log('listening!');
+
+// MongoClient.connect(
+//   "mongodb+srv://rominaSCH:dhktej31@nodsjsndb.uuwp9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+//   function (error, client) {
+//     if (error) return console.log(error); //한줄일 경우 {} 생략가능
+
+//     db = client.db("todo"); //todo라는 database(폴더)에 연결해주세요
+//     // db.collection('post').insertOne({_id : 100, name : "kim", age : 27}, function(err, result){
+//     //     console.log('저장완료')
+//     // });
+
+//     app.listen(6789, function () {
+//       //listen(서버띄울 포트번호, 띄운 후 실행할 코드)
+//       console.log("listening!");
+//     });
+//   }
+// );
+app.listen(6789, function () {
+    //listen(서버띄울 포트번호, 띄운 후 실행할 코드)
+    console.log("listening!");
 });
 
-app.get("/", function(req, res){
-    res.sendFile(__dirname + '/index.html');
-})
+app.get("/", function (req, res) {
+  res.sendFile(__dirname + "/index.html");
+});
 
-app.get("/write", function(req, res){
-    res.sendFile(__dirname + '/write.html');
-}) // JS는 콜백함수를 자주 쓰는데, 순차적으로 실행하고 싶을 때 사용한다. 
+app.get("/write", function (req, res) {
+  res.sendFile(__dirname + "/write.html");
+}); // JS는 콜백함수를 자주 쓰는데, 순차적으로 실행하고 싶을 때 사용한다.
 
-// /add 경로로 POST 요청을 하면 ??를 해주세요~
+// app.get("/list", function(req, res){
+//     db.collection("post").find().toArray((err, result) => {
+//         console.log(result);
+//         // res.render("list.ejs", )
+//     });//DB에 저장된 post라는 collection 안의 모든 데이터를 꺼내주세요
+//     res.render('list.ejs');
+    
+// })
 
-app.post("/add", function(req,res){ //받은 정보는 req에 있다. 쉽게 꺼내쓰려면 body-parser이 필요하다. npm install body-parser
-    res.send("전송완료");
-    console.log(req.body);
-    console.log(req.body.toDo);
-    console.log(req.body.date);
-})
+
+app.post("/add", function (req, res) {
+  //받은 정보는 req에 있다. 쉽게 꺼내쓰려면 body-parser이 필요하다. npm install body-parser
+  
+  MongoClient.connect(mongoURL,{ useUnifiedTopology: true }, function (error, client) {
+      if (error) return console.log(error); //한줄일 경우 {} 생략가능
+
+      db = client.db("todo"); //todo라는 database(폴더)에 연결해주세요
+      db.collection('post').insertOne({_id : new Date(), todo : req.body.toDo, dueDate : req.body.date}, function(err, result){
+          console.log('저장완료');
+      });
+
+      
+    }
+  );
+  res.send("전송완료");
+//   console.log(req.body);
+//   console.log(req.body.toDo);
+//   console.log(req.body.date);
+});
+
+
 
 // body-parser 설치 -> input 태그에 name 쓰기
 
@@ -45,7 +90,7 @@ app.post("/add", function(req,res){ //받은 정보는 req에 있다. 쉽게 꺼
 // facebook.com/natgeo/photos
 // // facebook.com/bbc/photos
 
-// < 이름 잘 짓는 방법 > 
+// < 이름 잘 짓는 방법 >
 // URL을 명사로 작성할 것
 // 띄어쓰기는 언더바_대신 대시-기호-사용
 // 파일 확장자 쓰지 말기 (.html 이런거)
