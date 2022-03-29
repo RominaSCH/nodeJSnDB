@@ -25,7 +25,7 @@ app.set("view enine", 'ejs');
 //     });
 //   }
 // );
-app.listen(6789, function () {
+app.listen(8080, function () {
     //listen(서버띄울 포트번호, 띄운 후 실행할 코드)
     console.log("listening!");
 });
@@ -50,15 +50,31 @@ app.post("/add", function (req, res) {
   //받은 정보는 req에 있다. 쉽게 꺼내쓰려면 body-parser이 필요하다. npm install body-parser
   MongoClient.connect(mongoURL,{ useUnifiedTopology: true }, function (error, client) {
       if (error) return console.log(error); //한줄일 경우 {} 생략가능
+    
       db = client.db("todo"); //todo라는 database(폴더)에 연결해주세요
-      db.collection('post').insertOne({_id : new Date(), todo : req.body.toDo, dueDate : req.body.date}, function(err, result){
-          console.log('saved');
-      });
-
       
-    }
-  );
-  res.send("전송완료");
+      db.collection('counter').findOne({name : '게시물갯수'}, function(err, result){
+        console.log(result.totalPost);
+
+        var 총게시물갯수 = result.totalPost;
+        db.collection('post').insertOne({_id : 총게시물갯수 + 1, todo : req.body.toDo, dueDate : req.body.date}, function(err, result){
+            console.log('saved'); // 위에 위엣줄! auto increament
+            
+           //counter + 1 해줘야함
+           db.collection('counter').updateOne({name : '게시물갯수'},{ $inc : {totalPost : 1}},function(에러, 결과){
+             //operator 하고 나서 수행할 함수 여기 적으면 된다
+             if(에러) return console.log(에러);
+           }) 
+           //updateOne({어떤 데이터를 수정할 지},{수정값(오퍼레이터를 써야함, 겉에 중괄호가 하나 더 늘어남)},function(){})
+           //operator
+           //{$set(변경), {~~ : 바꿀값}}
+           //{$inc(증가), {~~ : 기존값에 더해줄 값}}
+           //$min(기존 값보다 적을 때만 변경)
+           //$rename(key 값 이름변경)
+        });
+      });
+    });
+  // res.send("전송완료");
 //   console.log(req.body);
 //   console.log(req.body.toDo);
 //   console.log(req.body.date);
