@@ -80,6 +80,10 @@ app.post("/add", function (req, res) {
 //   console.log(req.body.date);
 });
 
+app.delete('/delete', function(요청, 응답){
+  console.log(요청.body); 
+  // 응답.send('삭제완료');
+});
 
 
 // body-parser 설치 -> input 태그에 name 쓰기
