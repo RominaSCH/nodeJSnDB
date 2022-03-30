@@ -38,7 +38,9 @@
       //jQuery 문법의 도움을 받은 AJAX 사용
       $(".deleteBtn").click(function (e) {
         //이해보단 외우셈! 내가 누른 버튼에 숨겨진 data-id값을 가져와 주세요 = e.target.dataset.id
-        console.log(e);
+        var 지금누른거 = $(this);
+        //e.target = 지금 클릭한 것,    this = 지금 이벤트가 동작하는 곳
+        // console.log(e);
         $.ajax({
           method: "DELETE",
           url: "/delete",
@@ -46,10 +48,14 @@
         })
           .done(function (결과) {
             // AJAX 성공시 실행할 코드는 여기
-            console.log("삭제 성공");
+            console.log("성공했어요!");
+            지금누른거.parent('tr').fadeOut(); //바로 글 삭제된것처럼 보여줌
+            // location.reload(); //엌 검색해서 따왔는데 바로 수업에서 알려주네 ㅋㅋㅋ
           })
-          .fail(function (에러) {
+          .fail(function (xhr, textStatus, errorThrown) {
             // 실패시 실행할 코드는 여기
+            console.log("실패");
+            //세가지 인자 출력해보면 알 수 있다.
           });
       });
     </script>

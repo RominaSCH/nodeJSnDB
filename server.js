@@ -86,6 +86,8 @@ app.delete('/delete', function(요청, 응답){
   db.collection('post').deleteOne(요청.body, function(err, result){ //deleteOne(어떤항목을 삭제할 지, 성공했을 때 함수)
     if(err) return console.log(err);
     console.log("삭제 완료");
+    응답.status(200).send({message : "성공했어열!"});
+    //응답코드 2xx면 성공했다~ 4xx 고객 잘못으로 요청 실패 5xx는 서버문제로 실패
   })
   // 응답.send('삭제완료');
 });
