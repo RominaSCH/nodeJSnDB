@@ -39,7 +39,7 @@ app.get("/write", function (req, res) {
 }); // JS는 콜백함수를 자주 쓰는데, 순차적으로 실행하고 싶을 때 사용한다.
 
 app.get("/list", function(req, res){
-    db.collection("post").find().toArray(function(err, result){
+    db.collection("post").find({}).toArray(function(error, result){
         console.log(result);
         res.render('list.ejs', {posts : result});
     });//DB에 저장된 post라는 collection 안의 모든 데이터를 꺼내주세요
@@ -81,7 +81,12 @@ app.post("/add", function (req, res) {
 });
 
 app.delete('/delete', function(요청, 응답){
-  console.log(요청.body); 
+  console.log(요청.body);
+  요청.body._id = parseInt(요청.body._id); 
+  db.collection('post').deleteOne(요청.body, function(err, result){ //deleteOne(어떤항목을 삭제할 지, 성공했을 때 함수)
+    if(err) return console.log(err);
+    console.log("삭제 완료");
+  })
   // 응답.send('삭제완료');
 });
 
