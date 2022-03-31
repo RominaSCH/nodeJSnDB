@@ -45,6 +45,13 @@ app.get("/list", function(req, res){
     });//DB에 저장된 post라는 collection 안의 모든 데이터를 꺼내주세요
 })
 
+app.get("/detail/:id", function(req,res){
+  db.collection("post").findOne({_id : parseInt(req.params.id)}, function(err, result){ // {_id : detail/뒤에있는 숫자}
+    console.log(result);
+    res.render("detail.ejs", { data : result}) //res.render("detail.ejs", {이런이름으로 : 이런데이터를})
+  })
+})
+
 
 app.post("/add", function (req, res) {
   //받은 정보는 req에 있다. 쉽게 꺼내쓰려면 body-parser이 필요하다. npm install body-parser
