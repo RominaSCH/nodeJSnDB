@@ -8,6 +8,7 @@ const mongoURL = "mongodb://rominaSCH:dhktej31@nodsjsndb-shard-00-00.uuwp9.mongo
 //작동이 안되면 98%확률로 오타!
 app.set("view enine", 'ejs');
 
+app.use('/public', express.static('public')); //css파일 넣기 위한 코드
 
 // MongoClient.connect(
 //   "mongodb+srv://rominaSCH:dhktej31@nodsjsndb.uuwp9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
@@ -50,6 +51,10 @@ app.get("/detail/:id", function(req,res){
     console.log(result);
     res.render("detail.ejs", { data : result}) //res.render("detail.ejs", {이런이름으로 : 이런데이터를})
   })
+});
+
+app.get("/edit", function(요청, 응답){
+  응답.render("edit.ejs");
 })
 
 
